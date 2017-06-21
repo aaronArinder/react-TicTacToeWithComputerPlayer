@@ -48,3 +48,19 @@ ol, ul {
 .game-info {
   margin-left: 20px;
 }
+
+/*THIS NEEDS TO CHANGE; HERE AS A PLAEHOLDER, FROM MARCIN BARANIECKI'S
+REACT IMPLEMENTATION OF TIC-TAC-TOE: https://github.com/belfz/tic-tac-react*/
+@keyframes symbol-appear {
+  from {
+    transform: scale(1.9);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+svg {
+  animation-name: symbol-appear;
+  animation-duration: .6s;
+}

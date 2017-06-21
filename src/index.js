@@ -2,14 +2,6 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 
-//This deals with each Square.
-function Square(props){
-  return (
-    <button className="square" onClick={props.onClick}>
-      {props.value}
-    </button>
-  )
-}
 //This deals with the Board.
 class Board extends React.Component {
 constructor(){
@@ -20,35 +12,38 @@ constructor(){
       computer: ""
     }
   }
-
 handleClick(i){
   var squares = this.state.squares.slice();
   if (calculateWinner(squares) || squares[i]){
-    console.log(this.state)
     return;
   }
   // //The above short-circuits the method if the position in the array
   // is already filled with something other than null.
   squares[i] = this.state.player
 
-  this.setState({
-    squares: determineAIMove(squares, this.state.computer, this.state.player),
-  })}
 
+  this.setState({
+  squares: determineAIMove(squares, this.state.computer, this.state.player),
+  })
+  }
 
 renderSquare(i) {
     return (
-        <Square
-              value={this.state.squares[i]}
+          <Square
               onClick={() => this.handleClick(i)}
-        />
+              value={this.state.squares[i]}
+          />
     );
   }
-
-setPlayerX() {this.setState({player: "X", computer: "O"})}
-setPlayerO() {this.setState({player: "O", computer: "X"})}
-
-
+setPlayerX(){this.setState({player: "X", computer: "O"})}
+setPlayerO(){this.setState({player: "O", computer: "X"})}
+resetBoard(){
+    this.setState({
+    squares: Array(9).fill(null),
+    player: "",
+    computer: ""}
+  )
+}
 render() {
 if (this.state.player === ""){
 
@@ -72,12 +67,66 @@ if (this.state.player === ""){
     const winner = calculateWinner(this.state.squares);
     let status;
     if (winner) {
-       var status = 'Winner: ' + winner;
-    } else if (calculateTie(this.state.squares)){var status = "Draw"} else {
+      var status = 'Winner: ' + winner;
+        return (<div>
+          <div className="board-row">
+            {this.renderSquare(0)}
+            {this.renderSquare(1)}
+            {this.renderSquare(2)}
+          </div>
+          <div className="board-row">
+            {this.renderSquare(3)}
+            {this.renderSquare(4)}
+            {this.renderSquare(5)}
+          </div>
+          <div className="board-row">
+            {this.renderSquare(6)}
+            {this.renderSquare(7)}
+            {this.renderSquare(8)}
+          </div>
+          <div className="status">{status}</div>
+          <div className="reset">
+            <button className="resetButton"
+              onClick={this.resetBoard.bind(this)}>
+                  Reset?
+            </button>
+          </div>
+        </div>)
+    }
+    else if (calculateTie(this.state.squares))
+      {var status = "Draw";
+      return (
+        <div>
+          <div className="board-row">
+            {this.renderSquare(0)}
+            {this.renderSquare(1)}
+            {this.renderSquare(2)}
+          </div>
+          <div className="board-row">
+            {this.renderSquare(3)}
+            {this.renderSquare(4)}
+            {this.renderSquare(5)}
+          </div>
+          <div className="board-row">
+            {this.renderSquare(6)}
+            {this.renderSquare(7)}
+            {this.renderSquare(8)}
+          </div>
+          <div className="status">{status}</div>
+          <div className="reset">
+            <button className="resetButton"
+              onClick={this.resetBoard.bind(this)}>
+                  Reset?
+            </button>
+          </div>
+        </div>
+
+    )}
+    else {
        var status = 'Next player: ' + (this.state.player);
     }
     //Having const before status made it so that Next Player: X/O wouldn't
-    // show up becayse const can't be re-declared.
+    // show up because const can't be re-declared.
     return (
       <div>
         <div className="board-row">
@@ -102,18 +151,40 @@ if (this.state.player === ""){
   }
 }
 
-class Game extends React.Component {
-  render() {
-    return (
-      <div className="game">
-        <div className="game-board">
-          <Board />
-        </div>
-      </div>
+//End board
 
-    );
-  }
+//This deals with each Square.
+
+
+
+function Square(props){
+  if(props.value === null){return(
+    <button className="square" onClick={props.onClick}>
+          {""}
+        </button>
+  )}
+  if(props.value === "X"){
+  return (
+    <button className="square" onClick={props.onClick}>
+      {
+        <svg viewBox="0 0 56 56">
+        <line x1="2" y1="2" x2="54" y2="54" stroke="black" strokeWidth="2" />
+        <line x1="2" y1="54" x2="54" y2="2" stroke="black" strokeWidth="2" />
+        </svg>
+      }
+    </button>
+  )}
+  else if (props.value === "O"){return(
+    <button className="square" onClick={props.onClick}>
+      {
+        <svg viewBox="0 0 56 56">
+        <circle cx={28} cy={28} r={25} stroke="black" strokeWidth="2" fill="none" />
+        </svg>
+      }
+    </button>
+  )}
 }
+
 
 function calculateWinner(squares) {
   const lines = [
@@ -138,6 +209,8 @@ function calculateWinner(squares) {
 function calculateTie(board){
   if (!board.includes(null)){return true}
 }
+
+
 
 function determineAIMove(board, computer, player){
 
@@ -165,8 +238,11 @@ else if (board[8] === null){board[8] = computer}
 return board
   }
 
-
 ReactDOM.render(
-  <Game />,
+  <div className="game">
+    <div className="game-board">
+      <Board />
+    </div>
+  </div>,
   document.getElementById('root')
 );
